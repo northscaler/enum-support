@@ -29,10 +29,52 @@ Each `Enumeration` class created via `Enumeration.new()` has the following publi
 * `isClass(it)`: a static method that returns truey if the given class is the enumeration class
 
 ## Examples
+For full usage, see [the tests](src/test/unit/enums).
 
-## Simple enumeration:  values only
-
+### Simple enumeration of values only
 ```javascript
-const Color = Enumeration.new({ name: 'Color', values: ['RED', 'GREEN', 'BLUE'] })
-
+const Color = Enumeration.new({
+  name: 'Color',                   // 1
+  values: ['RED', 'GREEN', 'BLUE'] // 2
+})
 ```
+1. Give the enumeration its name
+1. Provide each enumerated value as a literal string.
+
+### Enumeration with an instance method
+```javascript
+  const Weekday = Enumeration.new({
+    name: 'Weekday',
+    values: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
+  },
+  // 1
+  {
+    isBusinessDay () {
+      switch (this) {
+        case Weekday.SATURDAY:
+        case Weekday.SUNDAY:
+          return false
+        default:
+          return true
+      }
+    }
+  })
+```
+1. Simply provide a second parameter as a literal object with methods that you wan to add to the enumeration class
+
+### Enumeration with values that have their own methods
+```javascript
+  const TicTacToePiece = Enumeration.new({
+    name: 'TicTacToeColor',
+    values: {                                       // 1
+      O: {                                          // 2
+        get inverse () { return TicTacToePiece.X }
+      },
+      X: {                                          // 2
+        get inverse () { return TicTacToePiece.O }
+      }
+    }
+  })
+```
+1. Instead of providing an array of literal strings, provide an object whose keys are used as enumeration value names
+1. The value of each key is a literal object with methods that go on that specific value.

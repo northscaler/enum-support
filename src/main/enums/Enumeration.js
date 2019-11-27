@@ -6,6 +6,7 @@
 
 const ClassNotExtendableError = require('@northscaler/error-support/errors/ClassNotExtendableError')
 const UnknownEnumValueError = require('../errors/UnknownEnumValueError')
+const IllegalArgumentTypeError = require('@northscaler/error-support/errors/IllegalArgumentTypeError')
 const { toUpperSnake } = require('@northscaler/string-support')
 const copyProperties = require('./copyProperties')
 
@@ -62,7 +63,15 @@ class Enumeration {
       }
     }[name]
 
-    if (methods) Object.assign(E, methods)
+    if (methods) {
+      if (typeof methods === 'object') {
+        Object.keys(methods).forEach(m => {
+          E.prototype[m] = methods[m]
+        })
+      } else {
+        throw new IllegalArgumentTypeError({ msg: 'methods' })
+      }
+    }
 
     E._init(values)
 

@@ -79,16 +79,6 @@ describe('Enumeration: custom prototype method', function () {
     }
   })
 
-  Weekday.prototype.isBusinessDay = function () {
-    switch (this) {
-      case Weekday.SATURDAY:
-      case Weekday.SUNDAY:
-        return false
-      default:
-        return true
-    }
-  }
-
   it('Custom prototype method', () => {
     assert.strictEqual(Weekday.SATURDAY.isBusinessDay(), false)
     assert.strictEqual(Weekday.MONDAY.isBusinessDay(), true)
