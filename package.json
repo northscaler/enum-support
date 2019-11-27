@@ -7,11 +7,8 @@
     "url": "https://gitlab.com/northscaler-public/enum-support.git"
   },
   "keywords": [
-    "string",
-    "utility",
-    "utilities",
-    "snake",
-    "camel"
+    "enumeration",
+    "enum"
   ],
   "license": "MIT",
   "engines": {
