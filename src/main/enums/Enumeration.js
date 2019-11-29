@@ -64,13 +64,8 @@ class Enumeration {
     }[name]
 
     if (methods) {
-      if (typeof methods === 'object') {
-        Object.keys(methods).forEach(m => {
-          E.prototype[m] = methods[m]
-        })
-      } else {
-        throw new IllegalArgumentTypeError({ msg: 'methods' })
-      }
+      if (typeof methods === 'object') Object.assign(E.prototype, methods)
+      else throw new IllegalArgumentTypeError({ msg: 'methods' })
     }
 
     E._init(values)
