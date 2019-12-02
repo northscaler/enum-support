@@ -1,3 +1,3 @@
 'use strict'
 
-module.exports = require('./errors')
+module.exports = require('./enums')
