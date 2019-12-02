@@ -2,7 +2,9 @@
 'use strict'
 
 import * as assert from 'assert'
+import ClassNotExtendableError from '@northscaler/error-support/errors/ClassNotExtendableError'
 import Enumeration from '../../../main/enums/Enumeration'
+import EnumClassNotInstantiableError from '../../../main/errors/EnumClassNotInstantiableError'
 
 describe('Enumeration: simple', function () {
   const Color = Enumeration.new({ name: 'Color', values: ['RED', 'GREEN', 'BLUE'] })
@@ -19,7 +21,7 @@ describe('Enumeration: simple', function () {
     assert.strictEqual(Color.GREEN.ordinal, 1)
   })
 
-  it('_of', () => {
+  it('of', () => {
     assert.strictEqual(Color.of('BLUE'), Color.BLUE)
   })
 
@@ -27,23 +29,41 @@ describe('Enumeration: simple', function () {
     assert.deepStrictEqual(Color.values, [Color.RED, Color.GREEN, Color.BLUE])
   })
 
-  it('Class is closed (can’t be instantiated)', () => {
-    assert.throws(() => {
+  it('Class can’t be instantiated', () => {
+    try {
       // eslint-disable-next-line no-new
       new Color()
-    })
+      assert.fail('should have thrown EnumClassNotInstantiableError')
+    } catch (e) {
+      assert.ok(e instanceof EnumClassNotInstantiableError)
+    }
+  })
+
+  it('Class can’t be extended', () => {
+    try {
+      class Subcolor extends Color {}
+
+      // eslint-disable-next-line no-new
+      new Subcolor()
+
+      assert.fail('should have thrown ClassNotExtendableError')
+    } catch (e) {
+      assert.ok(e instanceof ClassNotExtendableError)
+    }
   })
 })
 
 describe('Enumeration: custom constructor and instance method', function () {
   const TicTacToePiece = Enumeration.new({
-    name: 'TicTacToeColor',
+    name: 'TicTacToePiece',
     values: {
       O: {
-        get inverse () { return TicTacToePiece.X }
+        get inverse () { return TicTacToePiece.X },
+        oh () { return 'o' }
       },
       X: {
-        get inverse () { return TicTacToePiece.O }
+        get inverse () { return TicTacToePiece.O },
+        ex () { return 'x' }
       }
     }
   })
@@ -51,6 +71,10 @@ describe('Enumeration: custom constructor and instance method', function () {
   it('Custom instance method', () => {
     assert.strictEqual(TicTacToePiece.X.inverse, TicTacToePiece.O)
     assert.strictEqual(TicTacToePiece.O.inverse, TicTacToePiece.X)
+    assert.strictEqual(TicTacToePiece.X.ex(), 'x')
+    assert.strictEqual(TicTacToePiece.O.oh(), 'o')
+    assert.ok(!TicTacToePiece.X.oh)
+    assert.ok(!TicTacToePiece.O.ex)
   })
 
   it('toString', () => {

@@ -6,21 +6,12 @@
 
 const ClassNotExtendableError = require('@northscaler/error-support/errors/ClassNotExtendableError')
 const UnknownEnumValueError = require('../errors/UnknownEnumValueError')
+const EnumClassNotInstantiableError = require('../errors/EnumClassNotInstantiableError')
 const IllegalArgumentTypeError = require('@northscaler/error-support/errors/IllegalArgumentTypeError')
 const { toUpperSnake } = require('@northscaler/string-support')
 const copyProperties = require('./copyProperties')
 
-const INITIALIZED = Symbol('ENUM_INITIALIZED')
-
 class Enumeration {
-  static isEnumerationInstance (it) {
-    return Enumeration.isEnumerationClass(it?.constructor)
-  }
-
-  static isEnumerationClass (it) {
-    return it && Object.getPrototypeOf(it).name === 'Enumeration'
-  }
-
   static new ({
     name,
     values,
@@ -30,17 +21,19 @@ class Enumeration {
       info = null
     } = {}
   } = {}, methods) {
-    code = code || `E_UNKNOWN_${toUpperSnake(name)}_ENUM_VALUE`
-    const EnumError = UnknownEnumValueError.subclass({ code })
+    const EnumError = UnknownEnumValueError.subclass({
+      code: code || `E_UNKNOWN_${toUpperSnake(name)}_ENUM_VALUE`,
+      name: `Unknown${name}EnumValue`
+    })
 
     const E = {
       [name]: class extends Enumeration {
         static isInstance (it) {
-          return Enumeration.isEnumerationInstance(it) && it.constructor.name === name
+          return E.isClass(it?.constructor)
         }
 
         static isClass (it) {
-          return Enumeration.isEnumerationClass(it) && it.name === name
+          return it === E
         }
 
         static of (it) {
@@ -50,7 +43,7 @@ class Enumeration {
           if (typeof it === 'number') e = E.values[it]
           if (e) return e
 
-          e = it && (it = it.toString()) && this.values.find(x => x.name === it)
+          e = it && (it = it.toString()) && this.values.find(e => e.name === it)
           if (e) return e
 
           throw new EnumError({ code, msg, info: info || { value: it } })
@@ -59,6 +52,7 @@ class Enumeration {
         constructor (...args) {
           super(...args)
           if (this.constructor !== E) throw new ClassNotExtendableError()
+          if (this.constructor.$ERROR$) throw new EnumClassNotInstantiableError()
         }
       }
     }[name]
@@ -70,13 +64,13 @@ class Enumeration {
 
     E._init(values)
 
-    E.$ERROR$ = EnumError
+    E.$ERROR$ = EnumError // provides specific UnknownEnumValueError subclass, and indicates completion of initialization
 
-    return E
+    return Object.freeze(Object.seal(E))
   }
 
   /**
-   * Set up the enum, close the class.
+   * Initialize the enum, and freeze & seal the class.
    *
    * @param arg Either an object whose properties provide the names
    * and values (which must be mutable objects) of the enum constants.
@@ -91,38 +85,37 @@ class Enumeration {
       enumerable: true
     })
     if (Array.isArray(arg)) {
-      this._enumValuesFromArray(arg)
+      this._initializeValuesFromArray(arg)
     } else {
-      this._enumValuesFromObject(arg)
+      this._initializeValuesFromObject(arg)
     }
+
     Object.freeze(this.values)
-    this[INITIALIZED] = true
-    return this
   }
 
-  static _enumValuesFromArray (arr) {
+  static _initializeValuesFromArray (arr) {
     for (const key of arr) {
-      this._pushEnumValue(new this(), key)
+      this._addValue(new this(), key)
     }
   }
 
-  static _enumValuesFromObject (obj) {
+  static _initializeValuesFromObject (obj) {
     for (const key of Object.keys(obj)) {
       const value = new this(obj[key])
-      this._pushEnumValue(value, key)
+      this._addValue(value, key)
     }
   }
 
-  static _pushEnumValue (enumValue, name) {
-    enumValue.name = name
-    enumValue.ordinal = this.values.length
+  static _addValue (value, name) {
+    value.name = name
+    value.ordinal = this.values.length
     Object.defineProperty(this, name, {
-      value: enumValue,
+      value: value,
       configurable: false,
       writable: false,
       enumerable: true
     })
-    this.values.push(enumValue)
+    this.values.push(Object.freeze(value))
   }
 
   /**
@@ -141,11 +134,6 @@ class Enumeration {
    * pass to `super()`. No arguments are fine, too.
    */
   constructor (instanceProperties = undefined) {
-    // new.target would be better than this.constructor,
-    // but isn’t supported by Babel
-    if ({}.hasOwnProperty.call(this.constructor, INITIALIZED)) {
-      throw new Error('Enum classes can’t be instantiated')
-    }
     if (typeof instanceProperties === 'object' && instanceProperties !== null) {
       copyProperties(this, instanceProperties)
     }
