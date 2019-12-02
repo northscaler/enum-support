@@ -78,7 +78,7 @@ describe('Enumeration: custom constructor and instance method', function () {
   })
 
   it('toString', () => {
-    assert.strictEqual(String(TicTacToePiece.O), 'TicTacToeColor.O')
+    assert.strictEqual(String(TicTacToePiece.O), 'TicTacToePiece.O')
   })
 
   it('ordinal', () => {
