@@ -3,7 +3,7 @@
 
 import * as assert from 'assert'
 import ClassNotExtendableError from '@northscaler/error-support/errors/ClassNotExtendableError'
-import Enumeration from '../../../main/enums/Enumeration'
+import Enumeration from '../../../main'
 import EnumClassNotInstantiableError from '../../../main/errors/EnumClassNotInstantiableError'
 
 describe('Enumeration: simple', function () {

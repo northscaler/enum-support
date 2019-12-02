@@ -2,7 +2,7 @@
 'use strict'
 
 import * as assert from 'assert'
-import Enumeration from '../../../main/enums/Enumeration'
+import Enumeration from '../../../main'
 
 const Result = Enumeration.new({ name: 'Result', values: ['ACCEPTED', 'REJECTED'] })
 
