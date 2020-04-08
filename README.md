@@ -60,14 +60,17 @@ const Color = Enumeration.new({
 
 ### Enumeration with an instance method
 ```javascript
-  const Weekday = Enumeration.new({
-    name: 'Weekday',
+  const Day = Enumeration.new({
+    name: 'Day',
     values: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
   },
   // 1
   {
+    isWeekend() {
+      return this === Day.SATURDAY || this === Day.SUNDAY
+    },
     isWeekday () {
-      return !(this === Weekday.SATURDAY || this === Weekday.SUNDAY)
+      return !this.isWeekend()
     }
   })
 ```
@@ -76,7 +79,7 @@ const Color = Enumeration.new({
 ### Enumeration with values that have their own methods
 ```javascript
   const TicTacToePiece = Enumeration.new({
-    name: 'TicTacToeColor',
+    name: 'TicTacToePiece',
     values: {                                       // 1
       O: {                                          // 2
         get inverse () { return TicTacToePiece.X },
