@@ -17,6 +17,10 @@ describe('Enumeration: simple', function () {
     assert.strictEqual(String(Color.RED), 'Color.RED')
   })
 
+  it('name', () => {
+    assert.strictEqual(Color.RED.name, 'RED')
+  })
+
   it('ordinal', () => {
     assert.strictEqual(Color.GREEN.ordinal, 1)
   })
@@ -88,24 +92,25 @@ describe('Enumeration: custom constructor and instance method', function () {
 })
 
 describe('Enumeration: custom prototype method', function () {
-  const Weekday = Enumeration.new({
-    name: 'Weekday',
+  const Day = Enumeration.new({
+    name: 'Day',
     values: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
-  }, {
-    isBusinessDay () {
-      switch (this) {
-        case Weekday.SATURDAY:
-        case Weekday.SUNDAY:
-          return false
-        default:
-          return true
-      }
+  },
+  // 1
+  {
+    isWeekend () {
+      return this === Day.SATURDAY || this === Day.SUNDAY
+    },
+    isWeekday () {
+      return !this.isWeekend()
     }
   })
 
   it('Custom prototype method', () => {
-    assert.strictEqual(Weekday.SATURDAY.isBusinessDay(), false)
-    assert.strictEqual(Weekday.MONDAY.isBusinessDay(), true)
+    assert.strictEqual(Day.SATURDAY.isWeekend(), true)
+    assert.strictEqual(Day.MONDAY.isWeekday(), true)
+    assert.strictEqual(Day.SUNDAY.isWeekday(), false)
+    assert.strictEqual(Day.MONDAY.isWeekend(), false)
   })
 })
 
