@@ -1,4 +1,5 @@
 'use strict'
 
-module.exports = require('@northscaler/error-support/errors/IllegalStateError')
-  .subclass({ name: 'EnumClassNotInstantiableError' })
+const { IllegalStateError } = require('@northscaler/error-support')
+
+module.exports = IllegalStateError.subclass({ name: 'EnumClassNotInstantiableError' })

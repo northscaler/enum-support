@@ -6,7 +6,7 @@ chai.use(require('dirty-chai'))
 const expect = chai.expect
 
 const Enumeration = require('../../../main')
-const ClassNotExtendableError = require('@northscaler/error-support/errors/ClassNotExtendableError')
+const { ClassNotExtendableError } = require('@northscaler/error-support')
 
 describe('unit tests of Enumeration', function () {
   it('should create a new enum', () => {

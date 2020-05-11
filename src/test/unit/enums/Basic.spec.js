@@ -2,7 +2,7 @@
 'use strict'
 
 import * as assert from 'assert'
-import ClassNotExtendableError from '@northscaler/error-support/errors/ClassNotExtendableError'
+import { ClassNotExtendableError } from '@northscaler/error-support'
 import Enumeration from '../../../main'
 import EnumClassNotInstantiableError from '../../../main/errors/EnumClassNotInstantiableError'
 

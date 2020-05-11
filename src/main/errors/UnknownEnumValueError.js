@@ -1,4 +1,5 @@
 'use strict'
 
-module.exports = require('@northscaler/error-support/errors/IllegalArgumentError')
-  .subclass({ name: 'UnknownEnumValueError' })
+const { IllegalArgumentError } = require('@northscaler/error-support')
+
+module.exports = IllegalArgumentError.subclass({ name: 'UnknownEnumValueError' })
