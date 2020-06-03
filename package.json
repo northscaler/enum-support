@@ -43,7 +43,8 @@
     "dist/",
     "docs/",
     "src/",
-    "index.js"
+    "index.js",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public"
