@@ -61,7 +61,7 @@ class Enumeration {
       else throw new IllegalArgumentTypeError({ msg: 'methods' })
     }
 
-    E._init(values)
+    E._init(values, methods)
 
     E.$ERROR$ = EnumError // provides specific UnknownEnumValueError subclass, and indicates completion of initialization
 
@@ -76,7 +76,7 @@ class Enumeration {
    * Or an Array whose elements are used as the names of the enum constants
    * The values are created by instantiating the current class.
    */
-  static _init (arg) {
+  static _init (arg, classMethods) {
     Object.defineProperty(this, 'values', {
       value: [],
       configurable: false,
@@ -84,35 +84,39 @@ class Enumeration {
       enumerable: true
     })
     if (Array.isArray(arg)) {
-      this._initializeValuesFromArray(arg)
+      this._initializeValuesFromArray(arg, classMethods)
     } else {
-      this._initializeValuesFromObject(arg)
+      this._initializeValuesFromObject(arg, classMethods)
     }
 
     Object.freeze(this.values)
   }
 
-  static _initializeValuesFromArray (arr) {
+  static _initializeValuesFromArray (arr, classMethods) {
     for (const key of arr) {
-      this._addValue(new this(), key)
+      this._addValue(new this(), key, classMethods)
     }
   }
 
-  static _initializeValuesFromObject (obj) {
+  static _initializeValuesFromObject (obj, classMethods) {
     for (const key of Object.keys(obj)) {
-      this._addValue(new this(obj[key]), key)
+      this._addValue(new this(obj[key]), key, classMethods)
     }
   }
 
-  static _addValue (value, name) {
+  static _addValue (value, name, classMethods) {
     value.name = name
-    value.ordinal = this.values.length
+    value.ordinal = this.values.length // current length of this.values is ordinal of next value
+
     Object.defineProperty(this, name, {
       value,
       configurable: false,
       writable: false,
       enumerable: true
     })
+
+    this._addPropertyAccessorsToValue(value, classMethods)
+
     this.values.push(Object.freeze(value))
   }
 
@@ -121,6 +125,29 @@ class Enumeration {
    */
   static [Symbol.iterator] () {
     return this.values[Symbol.iterator]()
+  }
+
+  /**
+   * Makes any property accessors (`get` methods) on the enumeration class have the `this` reference bound correctly on the enumeration instance.
+   * @param value
+   * @param classMethods
+   * @private
+   */
+  static _addPropertyAccessorsToValue (value, classMethods) {
+    if (!classMethods) return
+    if (typeof classMethods !== 'object') throw new IllegalArgumentTypeError({ msg: 'methods' })
+
+    Object.keys(classMethods).forEach(key => {
+      const descriptor = Object.getOwnPropertyDescriptor(classMethods, key)
+
+      if (descriptor.get) { // we have a property accessor defined at the enum class level -- define on instance for proper `this` binding
+        Object.defineProperty(value, key, {
+          get: descriptor.get,
+          configurable: false,
+          enumerable: true
+        })
+      }
+    })
   }
 
   /**
