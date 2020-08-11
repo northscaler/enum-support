@@ -36,10 +36,10 @@ describe('unit tests of Enumeration', function () {
       myName: function () {
         return `my name is ${this.name}`
       },
-      get myNameAsProp () {
+      get myNameIsThisDotMyNameAsProp () {
         return `${this.myName()} as prop`
       },
-      get myNameAsProp2 () {
+      get myNameIsThisDotNameAsProp () {
         return `my name is ${this.name} as prop`
       }
     })
@@ -68,10 +68,10 @@ describe('unit tests of Enumeration', function () {
     expect(Boolean.of(0)).to.equal(Boolean.TRUE)
     expect(() => Boolean.of('BOGUS')).to.throw(Boolean.$ERROR$)
       .that.has.property('code').that.equals('E_UNKNOWN_BOOLEAN_VALUE_ENUM_VALUE')
-
-    // expect(OneTwo.ONE.myNameAsProp).to.equal('my name is ONE as prop')
-    // expect(OneTwo.ONE.myNameAsProp2).to.equal('my name is ONE as prop')
-    // expect(OneTwo.TWO.myNameAsProp).to.equal('my name is TWO as prop')
+    expect(OneTwo.ONE.myNameIsThisDotMyNameAsProp).to.equal('my name is ONE as prop')
+    expect(OneTwo.ONE.myNameIsThisDotNameAsProp).to.equal('my name is ONE as prop')
+    expect(OneTwo.TWO.myNameIsThisDotMyNameAsProp).to.equal('my name is TWO as prop')
+    expect(OneTwo.TWO.myNameIsThisDotNameAsProp).to.equal('my name is TWO as prop')
   })
 
   it('should not allow enum classes to be instantiable', function () {
