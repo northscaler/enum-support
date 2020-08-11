@@ -1,3 +1,6 @@
 'use strict'
 
-module.exports = require('../require').jsFilesExceptIndexIn(__dirname)
+module.exports = {
+  EnumClassNotInstantiableError: require('./EnumClassNotInstantiableError'),
+  UnknownEnumValueError: require('./UnknownEnumValueError')
+}

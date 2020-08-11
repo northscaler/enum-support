@@ -1,3 +1,7 @@
 'use strict'
 
-module.exports = require('./enums')
+const exp = require('./enums')
+
+exp.errors = require('./errors')
+
+module.exports = exp
