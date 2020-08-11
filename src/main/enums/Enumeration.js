@@ -100,8 +100,7 @@ class Enumeration {
 
   static _initializeValuesFromObject (obj) {
     for (const key of Object.keys(obj)) {
-      const value = new this(obj[key])
-      this._addValue(value, key)
+      this._addValue(new this(obj[key]), key)
     }
   }
 
@@ -109,7 +108,7 @@ class Enumeration {
     value.name = name
     value.ordinal = this.values.length
     Object.defineProperty(this, name, {
-      value: value,
+      value,
       configurable: false,
       writable: false,
       enumerable: true
