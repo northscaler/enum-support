@@ -17,6 +17,10 @@ class Enumeration {
     return Enumeration._symbol === it?._symbol
   }
 
+  static isEnumerationInstance (it) {
+    return Enumeration.isEnumerationClass(it?.constructor)
+  }
+
   static new ({
     name,
     values,
