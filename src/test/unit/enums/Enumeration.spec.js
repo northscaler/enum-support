@@ -72,6 +72,10 @@ describe('unit tests of Enumeration', function () {
     expect(OneTwo.ONE.myNameIsThisDotNameAsProp).to.equal('my name is ONE as prop')
     expect(OneTwo.TWO.myNameIsThisDotMyNameAsProp).to.equal('my name is TWO as prop')
     expect(OneTwo.TWO.myNameIsThisDotNameAsProp).to.equal('my name is TWO as prop')
+
+    expect(Enumeration.isEnumerationClass(Boolean)).to.be.true()
+    expect(Enumeration.isEnumerationClass(OneTwo)).to.be.true()
+    expect(Enumeration.isEnumerationClass(OneTwo.ONE)).to.be.false()
   })
 
   it('should not allow enum classes to be instantiable', function () {

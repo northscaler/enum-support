@@ -11,6 +11,12 @@ const { toUpperSnake } = require('@northscaler/string-support')
 const copyProperties = require('./copyProperties')
 
 class Enumeration {
+  static _symbol = Symbol('Enumeration')
+
+  static isEnumerationClass (it) {
+    return Enumeration._symbol === it?._symbol
+  }
+
   static new ({
     name,
     values,
