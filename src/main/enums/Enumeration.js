@@ -9,12 +9,13 @@ const UnknownEnumValueError = require('../errors/UnknownEnumValueError')
 const EnumClassNotInstantiableError = require('../errors/EnumClassNotInstantiableError')
 const { toUpperSnake } = require('@northscaler/string-support')
 const copyProperties = require('./copyProperties')
+const symbol = 'Enumeration@northscaler/enum-support'
 
 class Enumeration {
-  static _symbol = Symbol('Enumeration')
+  static _$ = symbol
 
   static isEnumerationClass (it) {
-    return Enumeration._symbol === it?._symbol
+    return Enumeration._$ === it._$
   }
 
   static isEnumerationInstance (it) {
