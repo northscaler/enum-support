@@ -76,6 +76,7 @@ describe('unit tests of Enumeration', function () {
     expect(Enumeration.isEnumerationClass(Boolean)).to.be.true()
     expect(Enumeration.isEnumerationClass(OneTwo)).to.be.true()
     expect(Enumeration.isEnumerationClass(OneTwo.ONE)).to.be.false()
+    expect(Enumeration.isEnumerationInstance(OneTwo.ONE)).to.be.true()
   })
 
   it('should not allow enum classes to be instantiable', function () {
