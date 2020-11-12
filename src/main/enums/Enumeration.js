@@ -21,6 +21,7 @@ class Enumeration {
     return Enumeration.isEnumerationClass(it?.constructor)
   }
 
+  // eslint-disable-next-line default-param-last
   static new ({
     name,
     values,
