@@ -52,7 +52,7 @@
   "dependencies": {
     "@babel/polyfill": "7.12.1",
     "@northscaler/error-support": "3.4.1",
-    "@northscaler/string-support": "3.1.19"
+    "@northscaler/string-support": "3.1.20"
   },
   "devDependencies": {
     "@babel/cli": "7.12.1",
