@@ -1,6 +1,6 @@
 {
   "name": "@northscaler/enum-support",
-  "version": "4.3.0-pre.0",
+  "version": "4.3.0-pre.1",
   "description": "Convenient enumeration pattern for JavaScript",
   "repository": {
     "type": "git",
