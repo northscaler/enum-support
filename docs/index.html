@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1><code>enum-support</code></h1>
+<p>Convenient enumeration pattern for JavaScript.</p>
+<blockquote>
+<p>NB: Credit is due to https://github.com/rauschma/enumify, which appears to be no longer maintained as of this writing (November, 2019).</p>
+</blockquote>
+<blockquote>
+<p>NB2: This release contains breaking changes since v3.0.0.
+See details at the end of this document.</p>
+</blockquote>
+<h2>Overview</h2>
+<p>This library uses objects to represent enumerations, not just simple integer values.
+It's a little bit like the way <a href="https://docs.oracle.com/javase/tutorial/java/javaOO/enum.html">Java implements <code>enum</code>s</a>.</p>
+<p>In this implementation, you ask the <code>Enumeration</code> class to create your enum, including</p>
+<ul>
+<li>its name,</li>
+<li>its values,</li>
+<li>optionally, its instance methods, and</li>
+<li>optionally, unique instance methods for each of its values.</li>
+</ul>
+<p>Here's a simple example.</p>
+<pre class="prettyprint source lang-javascript"><code>const Enumeration = require('@northscaler/enum-support')
+const Color = Enumeration.new({ name: 'Color', values: ['RED', 'GREEN', 'BLUE'] })
+</code></pre>
+<h3>Stock features</h3>
+<p>The enumeration class you get has certain characteristics, including the following.</p>
+<ul>
+<li>They are <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/seal">sealed</a>.</li>
+<li>They are <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze">frozen</a>.</li>
+<li>They are not extendable, throwing <code>ClassNotExtendableError</code> from the constructor if subclassed then instantiated.</li>
+<li>They are not instantiable, throwing <code>EnumClassNotInstantiableError</code> from the constructor if <code>new</code>ed.</li>
+</ul>
+<p>Each <code>Enumeration</code> class created via <code>Enumeration.new()</code> has the following public properties and methods.</p>
+<ul>
+<li><code>values</code>: a static, frozen property containing an array of each of the instances, also frozen, of the enumeration; the order of the array determines each enum's ordinal (zero-based).</li>
+<li><code>$ERROR$</code>: a static property containing an <code>UnknownEnumValueError</code> subclass that has a <code>name</code> equal to <code>Unknown${name}EnumValue</code> code equal to <code>E_UNKNOWN_${toUpperSnake(name)}_ENUM_VALUE</code>.</li>
+<li><code>of(nameOrOrdinal)</code>: a static method that returns the enumeration instance given its <code>name</code> or zero-based ordinal; throws an instance of <code>$ERROR$</code> if not found.</li>
+<li><code>isInstance(it)</code>: a static method that returns truey if <code>it</code> is an instance of the enumeration's class (and yes, <code>instanceof</code> works, too, since these are just <code>class</code>es).</li>
+<li><code>isClass(it)</code>: a static method that returns truey if the given class is the enumeration class.</li>
+<li><code>Symbol.iterator</code>: a static property that returns an iterator over <code>values</code>.</li>
+</ul>
+<p>Each value (or, technically, <code>Enumeration</code> subclass instance) is frozen &amp; has the following public properties &amp; methods:</p>
+<ul>
+<li><code>name</code>: a string property containing the name of the value.</li>
+<li><code>ordinal</code>: a number representing the value's position amongst all values, as determined by the array of values you give to <code>Enumeration.new()</code>.</li>
+<li><code>toString()</code>: returns a concatenation of the class's <code>name</code>, followed by a <code>.</code>, followed by the value's <code>name</code> (ie, <code>Color.RED.toString() === 'Color.RED'</code>).</li>
+</ul>
+<h2>Examples</h2>
+<p>For full usage, see <a href="src/test/unit/enums">the tests</a>.</p>
+<h3>Simple enumeration of values only</h3>
+<pre class="prettyprint source lang-javascript"><code>const Color = Enumeration.new({
+  name: 'Color',                   // 1
+  values: ['RED', 'GREEN', 'BLUE'] // 2
+})
+</code></pre>
+<ol>
+<li>Give the enumeration its name</li>
+<li>Provide each enumerated value as a literal string.</li>
+</ol>
+<h3>Enumeration with an instance method</h3>
+<pre class="prettyprint source lang-javascript"><code>  const Day = Enumeration.new({
+    name: 'Day',
+    values: ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY']
+  },
+  // 1
+  {
+    isWeekend() {
+      return this === Day.SATURDAY || this === Day.SUNDAY
+    },
+    isWeekday () {
+      return !this.isWeekend()
+    }
+  })
+</code></pre>
+<ol>
+<li>Simply provide a second parameter as a literal object with methods that you wan to add to the enumeration class</li>
+</ol>
+<h3>Enumeration with values that have their own methods</h3>
+<pre class="prettyprint source lang-javascript"><code>  const TicTacToePiece = Enumeration.new({
+    name: 'TicTacToePiece',
+    values: {                                       // 1
+      O: {                                          // 2
+        get inverse () { return TicTacToePiece.X },
+        oh () { return 'o' }                        // 3
+      },
+      X: {                                          // 2
+        get inverse () { return TicTacToePiece.O },
+        ex () { return 'x' }                        // 4
+      }
+    }
+  })
+</code></pre>
+<ol>
+<li>Instead of providing an array of literal strings, provide an object whose keys are used as enumeration value names</li>
+<li>The value of each key is a literal object with methods that go on that specific value.</li>
+<li>Method unique to <code>TicTacToePiece.O</code></li>
+<li>Method unique to <code>TicTacToePiece.X</code></li>
+</ol>
+<h2>Breaking changes since v3.0.0</h2>
+<ul>
+<li>All enumeration classes &amp; instances are frozen &amp; sealed, throwing <code>ClassNotExtendableError</code>.</li>
+<li>Enumeration class constructors now throw <code>EnumClassNotInstantiableError</code> if instantiated.</li>
+<li><code>$ERROR$</code> class now has its <code>name</code> set correctly.</li>
+<li>Removed static property <code>INITIALIZED</code> from enumeration classes.</li>
+<li>Removed methods <code>isEnumerationInstance</code> &amp; <code>isEnumerationClass</code> from <code>Enumeration</code>.</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Enumeration.html">Enumeration</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.5</a> on Thu Nov 12 2020 08:01:16 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
