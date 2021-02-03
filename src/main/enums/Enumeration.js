@@ -42,12 +42,16 @@ class Enumeration {
           return symbol
         }
 
+        static _$$ () {
+          return name
+        }
+
         static isInstance (it) {
           return E.isClass(it?.constructor)
         }
 
         static isClass (it) {
-          return it === E
+          return it === E || E._$$() === (it?._$$ && it._$$()) // Fix issues/3
         }
 
         static of (it) {
