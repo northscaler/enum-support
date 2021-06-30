@@ -102,4 +102,3 @@ const Color = Enumeration.new({
 * Enumeration class constructors now throw `EnumClassNotInstantiableError` if instantiated.
 * `$ERROR$` class now has its `name` set correctly.
 * Removed static property `INITIALIZED` from enumeration classes.
-* Removed methods `isEnumerationInstance` & `isEnumerationClass` from `Enumeration`.
